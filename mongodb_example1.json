@@ -1,0 +1,135 @@
+{
+    "kind": "List",
+    "apiVersion": "v1",
+    "metadata": {},
+    "items": [
+        {
+            "kind": "DeploymentConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "mongodb",
+                "namespace": "simple-mongodb",
+                "selfLink": "/oapi/v1/namespaces/simple-mongodb/deploymentconfigs/mongodb",
+                "uid": "380bf626-a367-11e5-93f8-fa163ea74122",
+                "resourceVersion": "1694574",
+                "creationTimestamp": "2015-12-15T20:05:42Z",
+                "labels": {
+                    "template": "mongodb-persistent-template"
+                }
+            },
+            "spec": {
+                "strategy": {
+                    "type": "Recreate",
+                    "resources": {}
+                },
+                "triggers": [
+                    {
+                        "type": "ImageChange",
+                        "imageChangeParams": {
+                            "automatic": true,
+                            "containerNames": [
+                                "mongodb"
+                            ],
+                            "from": {
+                                "kind": "ImageStreamTag",
+                                "namespace": "openshift",
+                                "name": "mongodb:latest"
+                            },
+                            "lastTriggeredImage": "registry.access.redhat.com/openshift3/mongodb-24-rhel7:latest"
+                        }
+                    },
+                    {
+                        "type": "ConfigChange"
+                    }
+                ],
+                "replicas": 1,
+                "selector": {
+                    "name": "mongodb"
+                },
+                "template": {
+                    "metadata": {
+                        "creationTimestamp": null,
+                        "labels": {
+                            "name": "mongodb"
+                        }
+                    },
+                    "spec": {
+                        "volumes": [
+                            {
+                                "name": "mongodb-data",
+                                "persistentVolumeClaim": {
+                                    "claimName": "mongodb"
+                                }
+                            },
+                            {
+                                "name": "secret-volume",
+                                "secret": {
+                                    "secretName": "mysecret"
+                                }
+                            }
+                        ],
+                        "containers": [
+                            {
+                                "name": "mongodb",
+                                "image": "registry.access.redhat.com/openshift3/mongodb-24-rhel7:latest",
+                                "ports": [
+                                    {
+                                        "containerPort": 27017,
+                                        "protocol": "TCP"
+                                    }
+                                ],
+                                "env": [
+                                    {
+                                        "name": "MONGODB_USER",
+                                        "value": "admin"
+                                    },
+                                    {
+                                        "name": "MONGODB_PASSWORD",
+                                        "value": "redhat"
+                                    },
+                                    {
+                                        "name": "MONGODB_DATABASE",
+                                        "value": "sampledb"
+                                    },
+                                    {
+                                        "name": "MONGODB_ADMIN_PASSWORD",
+                                        "value": "admin"
+                                    }
+                                ],
+                                "resources": {},
+                                "volumeMounts": [
+                                    {
+                                        "name": "mongodb-data",
+                                        "mountPath": "/var/lib/mongodb/data"
+                                    },
+                                    {
+                                        "name": "secret-volume",
+                                        "mountPath": "/etc/secret-volume"
+                                    }
+                                ],
+                                "terminationMessagePath": "/dev/termination-log",
+                                "imagePullPolicy": "IfNotPresent",
+                                "securityContext": {
+                                    "capabilities": {},
+                                    "privileged": false
+                                }
+                            }
+                        ],
+                        "restartPolicy": "Always",
+                        "dnsPolicy": "ClusterFirst"
+                    }
+                }
+            },
+            "status": {
+                "latestVersion": 3,
+                "details": {
+                    "causes": [
+                        {
+                            "type": "ConfigChange"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
