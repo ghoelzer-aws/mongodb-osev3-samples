@@ -1,0 +1,84 @@
+{
+    "kind": "List",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "mongo3.0"
+    },
+    "items": [
+        {
+            "kind": "BuildConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "mongo3.0"
+            },
+            "spec": {
+                "triggers": [
+                    {
+                        "type": "GitHub",
+                        "github": {
+                            "secret": "secret"
+                        }
+                    },
+                    {
+                        "type": "Generic",
+                        "generic": {
+                            "secret": "secret"
+                        }
+                    },
+                    {
+                        "type": "ImageChange",
+                        "imageChange": {}
+                    }
+                ],
+                "source": {
+                    "type": "Git",
+                    "git": {
+                        "uri": "git@git.target.com:Cloud-Ready-Ref/mongo.git",
+                        "ref": "master"
+                    },
+                    "sourceSecret": {
+                        "name": "tgtrefglobal"
+                    }
+                },
+                "strategy": {
+                    "type": "Docker",
+                    "dockerStrategy": {
+                        "from": {
+                            "kind": "ImageStreamTag",
+                            "name": "rhel7:latest"
+                        }
+                    }
+                },
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "mongo30:latest"
+                    }
+                },
+                "resources": {}
+            }
+        },
+        {
+            "kind": "ImageStream",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "mongo30"
+            },
+            "spec": {
+                "dockerImageRepository": "",
+                "tags": [
+                    {
+                        "name": "latest",
+                        "annotations": {
+                            "description": "Base mongo 30 image",
+                            "iconClass": "icon-target",
+                            "tags": "builder,mongo,docker",
+                            "supports": "mongo30",
+                            "version": "1.0"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

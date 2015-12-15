@@ -1,0 +1,149 @@
+{
+    "kind": "List",
+    "apiVersion": "v1",
+    "metadata": {},
+    "items": [
+        {
+            "kind": "DeploymentConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "mongodb-replica-2",
+                "labels": {
+                    "template": "mongodb-replica-persistent-template",
+                    "name": "mongodb-replica",
+                    "podType": "member-pod2"
+                }
+            },
+            "spec": {
+                "strategy": {
+                    "type": "Recreate",
+                    "resources": {}
+                },
+                "triggers": [
+                    {
+                        "type": "ImageChange",
+                        "imageChangeParams": {
+                            "automatic": true,
+                            "containerNames": [
+                                "member2"
+                            ],
+                            "from": {
+                                "kind": "ImageStreamTag",
+                                "name": "mongo30:latest"
+                            },
+                            "lastTriggeredImage": "mongo30:latest"
+                        }
+                    },
+                    {
+                        "type": "ConfigChange"
+                    }
+                ],
+                "replicas": 1,
+                "selector": {
+                    "name": "mongodb-member2"
+                },
+                "template": {
+                    "metadata": {
+                        "creationTimestamp": null,
+                        "labels": {
+                            "name": "mongodb-member2"
+                        }
+                    },
+                    "spec": {
+                        "volumes": [
+                            {
+                                "name": "mongodb-data",
+                                "persistentVolumeClaim": {
+                                    "claimName": "mongodb-member2"
+                                }
+                            }
+                        ],
+                        "containers": [
+                            {
+                                "name": "member2",
+                                "image": "mongo30:latest",
+                                "env": [
+                                  {
+                                    "name": "MONGODB_USER",
+                                    "value": "mongo"
+                                  },
+                                  {
+                                    "name": "MONGODB_PASSWORD",
+                                    "value": "mongo"
+                                  },
+                                  {
+                                    "name": "MONGODB_DATABASE",
+                                    "value": "userdb"
+                                  },
+                                  {
+                                    "name": "MONGODB_ADMIN_PASSWORD",
+                                    "value": "admin"
+                                  },
+                                  {
+                                    "name": "MONGODB_REPLICA_NAME",
+                                    "value": "rs0"
+                                  },
+                                  {
+                                    "name": "MONGODB_SERVICE_NAME",
+                                    "value": "mongodb"
+                                  },
+                                  {
+                                    "name": "MONGODB_KEYFILE_VALUE",
+                                    "value": "adminkeyvalue"
+                                  },
+                                  {
+                                    "name": "CONTAINER_SCRIPTS_PATH",
+                                    "value": "/usr/share/container-scripts/mongodb"
+                                  },
+                                  {
+                                    "name": "MONGODB_VERSION",
+                                    "value": "3.0"
+                                  },
+                                  {
+                                    "name": "HOME",
+                                    "value": "/var/lib/mongodb"
+                                  },
+                                  {
+                                    "name": "PATH",
+                                    "value": "/usr/share/container-scripts/mongodb/:/mongodb/mongodb-linux-x86_64-3.0.7/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/centos/.local/bin:/home/centos/bin"
+                                  }
+                                ],
+                                "ports":[
+                                  {
+                                    "containerPort": 27017,
+                                    "protocol": "TCP"
+                                  }
+                                ],
+                                "volumeMounts": [
+                                  {
+                                    "name": "mongodb-data",
+                                    "mountPath": "/var/lib/mongodb/data"
+                                  }
+                                ],
+                                "resources": {},
+                                "terminationMessagePath": "/dev/termination-log",
+                                "imagePullPolicy": "IfNotPresent",
+                                "securityContext": {
+                                    "capabilities": {},
+                                    "privileged": false
+                                }
+                            }
+                        ],
+                        "restartPolicy": "Always",
+                        "dnsPolicy": "ClusterFirst"
+                    }
+                }
+            },
+            "status": {
+                "latestVersion": 3,
+                "details": {
+                    "causes": [
+                        {
+                            "type": "ConfigChange"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

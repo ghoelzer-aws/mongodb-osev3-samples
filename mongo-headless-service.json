@@ -1,0 +1,27 @@
+{
+  "kind": "Service",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "mongodb",
+    "labels": {
+      "name": "mongodb"
+    }
+  },
+  "spec": {
+    "ports": [
+      {
+        "protocol": "TCP",
+        "port": 27017,
+        "targetPort": 27017,
+        "nodePort": 0
+      }
+    ],
+    "selector": {
+      "name": "mongodb-replica"
+    },
+    "clusterIP": "None"
+  },
+  "status": {
+    "loadBalancer": {}
+  }
+}

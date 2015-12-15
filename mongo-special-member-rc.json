@@ -1,0 +1,99 @@
+{
+      "kind": "ReplicationController",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "mongodb-special-pod"
+      },
+      "spec": {
+        "replicas": 1,
+        "selector": {
+          "name": "mongodb-replica",
+          "podType": "special-pod"
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "name": "mongodb-replica",
+              "podType": "special-pod"
+            }
+          },
+          "spec": {
+            "nodeName": "mesosslave3.ealabs.stack.targetnpe.com",
+            "volumes": [
+              {
+                "name": "mongo-disk",
+                "hostPath":
+                  {
+                   "path": "/mongodb/special_member/data/db"
+                  }
+              }
+            ],
+            "containers": [
+              {
+                "name":  "special-pod",
+                "image": "dockerhub.ealabs.stack.targetnpe.com:5000/ealabs/mongo:df-dev-test",
+                "args": ["/usr/share/container-scripts/mongodb/initiate_replica.sh"],
+                "env": [
+                  {
+                    "name": "MONGODB_USER",
+                    "value": "mongo"
+                  },
+                  {
+                    "name": "MONGODB_PASSWORD",
+                    "value": "mongo"
+                  },
+                  {
+                    "name": "MONGODB_DATABASE",
+                    "value": "userdb"
+                  },
+                  {
+                    "name": "MONGODB_ADMIN_PASSWORD",
+                    "value": "admin"
+                  },
+                  {
+                    "name": "MONGODB_REPLICA_NAME",
+                    "value": "rs0"
+                  },
+                  {
+                    "name": "MONGODB_SERVICE_NAME",
+                    "value": "mongodb"
+                  },
+                  {
+                    "name": "MONGODB_KEYFILE_VALUE",
+                    "value": "adminkeyvalue"
+                  },
+                  {
+                    "name": "CONTAINER_SCRIPTS_PATH",
+                    "value": "/usr/share/container-scripts/mongodb"
+                  },
+                  {
+                    "name": "MONGODB_VERSION",
+                    "value": "3.0"
+                  },
+                  {
+                    "name": "HOME",
+                    "value": "/var/lib/mongodb"
+                  },
+                  {
+                    "name": "PATH",
+                    "value": "/mongodb/mongodb-linux-x86_64-3.0.7/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/centos/.local/bin:/home/centos/bin"
+                  }
+                ],
+                "ports":[
+                  {
+                    "containerPort": 27017,
+                    "protocol": "TCP"
+                  }
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "mongo-disk",
+                    "mountPath": "/var/lib/mongodb/data"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
